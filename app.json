@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "RN-supabase-react-query-emotion-native-boilerplate",
-    "slug": "rn-supabase-react-query-emotion-native-boilerplate",
+    "name": "signatures-mobile-expo",
+    "slug": "signatures-mobile-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rn-supabase-react-query-emotion-native-boilerplate",
+      "bundleIdentifier": "com.signatures-mobile-expo",
       "buildNumber": "1",
       "jsEngine": "hermes"
     },
