@@ -2,11 +2,11 @@ import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function SavedScreen() {
+export default function SignaturesScreen() {
   return (
     <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Saved Cars</ThemedText>
-      <ThemedText>Your saved cars will appear here!</ThemedText>
+      <ThemedText style={styles.title}>Signatures</ThemedText>
+      <ThemedText>Your signatures will appear here!</ThemedText>
     </ThemedView>
   );
 }
