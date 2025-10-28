@@ -1,144 +1,69 @@
-import React, { useState } from "react";
-import {
-  View,
-  PanResponder,
-  StyleSheet,
-  GestureResponderEvent,
-} from "react-native";
-import Svg, { G, Path } from "react-native-svg";
-import { decamelize } from "humps";
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-export type Point = {
-  x: number;
-  y: number;
-};
+import { Colors } from '@/constants/Colors';
+import { Link } from 'expo-router';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { supabase } from '@/config/supabase';
+//import { useState, useEffect } from 'react';
 
-const round = (n: number): string => n.toFixed(0);
+export default function SignaturesTabScreen() {
 
-const pointsToSvg = (points: Point[]) => {
-  if (points.length > 0) {
-    return (
-      `M ${round(points[0].x)},${round(points[0].y)}` +
-      points.slice(1).map((point) => ` L ${round(point.x)},${round(point.y)}`)
-    );
-  } else {
-    return "";
-  }
-};
-
-export type Stroke = {
-  attributes: Record<string, string | number>;
-  type: string;
-};
-
-export const convertStrokesToSvg = (
-  strokes: Stroke[],
-  { width, height }: { width: number; height: number }
-): string => {
-  return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" version="1.1">
-      <g>
-        ${strokes
-          .map(
-            (stroke) =>
-              `<${stroke.type.toLowerCase()} ${Object.keys(stroke.attributes)
-                .map(
-                  (a) =>
-                    `${decamelize(a, { separator: "-" })}="${
-                      stroke.attributes[a]
-                    }"`
-                )
-                .join(" ")}/>`
-          )
-          .join("\n")}
-      </g>
-    </svg>
-  `;
-};
-
-type SignatureProps = {
-  strokeWidth?: number;
-  color?: string;
-};
-
-const SignaturesTab = ({
-  strokeWidth = 4,
-  color = "#000000",
-}: SignatureProps) => {
-  const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
-  const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
-
-  const onResponderRelease = () => {
-    if (currentPoints.length < 1) return;
-
-    if (currentPoints.length === 1) {
-      let p = currentPoints[0];
-      let distance = Math.sqrt(strokeWidth) / 2;
-      currentPoints.push({ x: p.x + distance, y: p.y + distance });
-    }
-
-    let newElement: Stroke = {
-      type: "Path",
-      attributes: {
-        d: pointsToSvg(currentPoints),
-        stroke: color,
-        strokeWidth: strokeWidth,
-        fill: "none",
-        strokeLinecap: "round",
-        strokeLinejoin: "round",
-      },
-    };
-
-    setPreviousStrokes((oldPrevStrokes) => [...oldPrevStrokes, newElement]);
-    setCurrentPoints([]);
-  };
-
-  const onTouch = (evt: GestureResponderEvent) => {
-    setCurrentPoints([
-      ...currentPoints,
-      { x: evt.nativeEvent.locationX, y: evt.nativeEvent.locationY },
-    ]);
-  };
-
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: (_) => true,
-    onMoveShouldSetPanResponder: (_) => true,
-    onPanResponderGrant: onTouch,
-    onPanResponderMove: onTouch,
-    onPanResponderRelease: () => onResponderRelease(),
-  });
 
   return (
-    <View style={styles.svgContainer} {...panResponder.panHandlers}>
-      <Svg style={styles.drawSurface}>
-        <G>
-          {strokes.map((stroke) => (
-            <Path
-              {...stroke.attributes}
-              key={JSON.stringify(stroke.attributes)}
-            />
-          ))}
-          <Path
-            d={pointsToSvg(currentPoints)}
-            stroke={color}
-            strokeWidth={strokeWidth || 4}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </G>
-      </Svg>
-    </View>
+    <ThemedView style={styles.container}>
+
+      <View style={styles.linksContainer}>
+
+        <ThemedText style={styles.linkText}>Welcome to the signatures page</ThemedText>
+        
+
+        <Link href="/createsignature" style={styles.link}>
+          <ThemedText style={styles.linkText}>📋 Create a signature</ThemedText>
+        </Link>
+
+        <Link href="/signatures" style={styles.link}>
+          <ThemedText style={styles.linkText}>❓ Signatures</ThemedText>
+        </Link>
+
+        {/* logout */}
+        {/* <Link href="/logout" style={styles.link}> */}
+        <TouchableOpacity style={styles.logoutLink} onPress={() => supabase.auth.signOut()}>
+          <ThemedText style={styles.linkText}>🚪 Logout</ThemedText>
+        </TouchableOpacity>
+      </View>
+    </ThemedView>
   );
-};
+}
 
-let styles = StyleSheet.create({
-  svgContainer: {
+const styles = StyleSheet.create({
+  container: {
     flex: 1,
+    alignItems: 'center',
+    padding: 20,
   },
-  drawSurface: {
-    flex: 1,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
-});
-
-export default SignaturesTab;
+  linksContainer: {
+    width: '100%',
+    gap: 15,
+  },
+  link: {
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#007AFF',
+  },
+  logoutLink: {
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#b04435',
+  },
+  linkText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+}); 

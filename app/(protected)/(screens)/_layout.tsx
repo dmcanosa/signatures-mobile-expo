@@ -9,6 +9,7 @@ export default function ScreensLayout() {
   const MyListingsPageOptions = { headerShown: true, headerTitle: 'My Listings' };
   const ProfilePageOptions = { headerShown: true, headerTitle: 'Profile' };
   const MySignaturesPageOptions = { headerShown: true, headerTitle: 'My Signatures' };
+  const CreateSignaturePageOptions = { headerShown: true, headerTitle: 'Create Signature' };
   
 
   return (
@@ -19,6 +20,7 @@ export default function ScreensLayout() {
       <Stack.Screen name="messages/index" options={MessagesPageOptions} />
       <Stack.Screen name="my-listings/index" options={MyListingsPageOptions} />
       <Stack.Screen name="signatures/index" options={MySignaturesPageOptions} />
+      <Stack.Screen name="createsignature/index" options={CreateSignaturePageOptions} />
       <Stack.Screen name="profile-settings/index" options={ProfilePageOptions} />
     </Stack>
   );
