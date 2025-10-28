@@ -56,19 +56,15 @@ export const convertStrokesToSvg = (
   `;
 };
 
-type WhiteboardProps = {
+type SignatureProps = {
   strokeWidth?: number;
   color?: string;
-  //strokes: Stroke[];
-  //setStrokes: React.Dispatch<React.SetStateAction<Stroke[]>>;
 };
 
-const Signatures = ({
+const SignaturesTab = ({
   strokeWidth = 4,
   color = "#000000",
-  //strokes: previousStrokes,
-  //setStrokes: setPreviousStrokes,
-}: WhiteboardProps) => {
+}: SignatureProps) => {
   const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
   const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
 
@@ -116,7 +112,7 @@ const Signatures = ({
     <View style={styles.svgContainer} {...panResponder.panHandlers}>
       <Svg style={styles.drawSurface}>
         <G>
-          {strokes && strokes.map((stroke) => (
+          {strokes.map((stroke) => (
             <Path
               {...stroke.attributes}
               key={JSON.stringify(stroke.attributes)}
@@ -145,4 +141,4 @@ let styles = StyleSheet.create({
   },
 });
 
-export default Signatures;
+export default SignaturesTab;

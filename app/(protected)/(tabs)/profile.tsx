@@ -39,6 +39,9 @@ export default function ProfileScreen() {
         <Link href="/help" style={styles.link}>
           <ThemedText style={styles.linkText}>❓ Help Center</ThemedText>
         </Link>
+        <Link href="/signatures" style={styles.link}>
+          <ThemedText style={styles.linkText}>❓ Signatures</ThemedText>
+        </Link>
 
         {/* logout */}
         {/* <Link href="/logout" style={styles.link}> */}

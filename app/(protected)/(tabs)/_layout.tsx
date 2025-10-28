@@ -43,7 +43,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="signatures"
+        name="signaturestab"
         options={{
           title: 'Signatures',
           tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
