@@ -113,13 +113,18 @@ const CreateSignatureScreen = ({
     const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
     const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
     console.log('svg width: ',svgWidth);
-    console.log('strokes ',strokes);
+    //console.log('strokes ',strokes);
     const svgFromStrokes = convertStrokesToSvg(strokes, { width: svgWidth, height: svgHeight });
-    const encodedSvg = encodeURIComponent(svgFromStrokes);
-    const base64Svg = btoa(encodedSvg);
+    //const encodedSvg = encodeURIComponent(svgFromStrokes);
+    //console.log('svgfromstrokes: ',svgFromStrokes);
+    //const base64Svg = btoa(encodedSvg);
+    const base64Svg = btoa(svgFromStrokes);
+    //console.log('sigDatabefore: ',base64Svg);
+    //const base64Svg = Buffer.toString('base64');//  encodedSvg);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
-    console.log('sigData: ',sigString);
+    createSignature(formData);
+    //console.log('sigData: ',sigString);
   }
 
   const panResponder = PanResponder.create({
