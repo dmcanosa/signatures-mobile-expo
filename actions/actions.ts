@@ -3,6 +3,8 @@ import NextCrypto from 'next-crypto';
 import { supabase } from '@/config/supabase';
 import { Buffer } from 'buffer';
 
+
+
 /*const FormSchema = z.object({
   id: z.string(),
   data: z.string(),
@@ -39,7 +41,7 @@ export async function createSignature(formData: FormData) {
   }
 
   //const sb = await supabase();
-  //try {
+  try {
     const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
 
 
@@ -69,12 +71,20 @@ export async function createSignature(formData: FormData) {
         console.log(error);  
       })();
   
-  /*} catch (error) {
+  } catch (error) {
     return {
+      success: false,
       message: 'Database Error: Failed to Create Signature.'+error,
     };
-  } */ 
+  }  
 
+  return {
+      success: true,
+      message: '',
+    };
+
+  //return true;
+  
   /*const decrypted = user.data.user.id as string;
   const signature = await crypto.encrypt(validatedFields.data.data);
   if(userId == '')

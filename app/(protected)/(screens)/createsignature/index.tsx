@@ -12,6 +12,7 @@ import {
 import Svg, { G, Path } from "react-native-svg";
 import { decamelize } from "humps";
 import { createSignature } from "@/actions/actions";
+import { Redirect, useRouter } from 'expo-router';
 
 export type Point = {
   x: number;
@@ -72,9 +73,7 @@ const CreateSignatureScreen = ({
 }: SignatureProps) => {
   const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
   const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
-
-  //const [signatureData, setSignatureData] = useState('');
-  //const [email, setEmail] = useState('');
+  const [sigCreated, setSigCreated] = useState(false);
 
   const onResponderRelease = () => {
     if (currentPoints.length < 1) return;
@@ -108,7 +107,7 @@ const CreateSignatureScreen = ({
     ]);
   };
 
-  const handleSubmit = () =>{
+  const handleSubmit = async () =>{
     const formData = new FormData();
     const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
     const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
@@ -123,8 +122,17 @@ const CreateSignatureScreen = ({
     //const base64Svg = Buffer.toString('base64');//  encodedSvg);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
-    createSignature(formData);
+    const res = await createSignature(formData);
+    if(res.success === true){
+      setSigCreated(true);
+    }
+    //if(await createSignature(formData) === true){
+      //const router = useRouter();
+      //router.navigate('/');
+
+    //}
     //console.log('sigData: ',sigString);
+    //return <Redirect href="/" />;
   }
 
   const panResponder = PanResponder.create({
@@ -135,34 +143,39 @@ const CreateSignatureScreen = ({
     onPanResponderRelease: () => onResponderRelease(),
   });
 
-  return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Create your signature</ThemedText>
+  if(sigCreated === true){
+    return (<Redirect href="/" />);  
+  }else{
+    return (
       
-
-        <View style={styles.svgContainer} {...panResponder.panHandlers}>
-        <Svg id='svgSignature' style={styles.drawSurface}>
-          <G>
-            {strokes.map((stroke) => (
+      <ThemedView style={styles.container}>
+        <ThemedText style={styles.title}>Create your signature</ThemedText>
+        
+          
+          <View style={styles.svgContainer} {...panResponder.panHandlers}>
+          <Svg id='svgSignature' style={styles.drawSurface}>
+            <G>
+              {strokes.map((stroke) => (
+                <Path
+                {...stroke.attributes}
+                key={JSON.stringify(stroke.attributes)}
+                />
+              ))}
               <Path
-              {...stroke.attributes}
-              key={JSON.stringify(stroke.attributes)}
-              />
-            ))}
-            <Path
-              d={pointsToSvg(currentPoints)}
-              stroke={color}
-              strokeWidth={strokeWidth || 4}
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              />
-          </G>
-        </Svg>
-      </View>
-        <Button title="Create Signature" onPress={handleSubmit}/>    
-    </ThemedView>
-  );
+                d={pointsToSvg(currentPoints)}
+                stroke={color}
+                strokeWidth={strokeWidth || 4}
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                />
+            </G>
+          </Svg>
+        </View>
+          <Button title="Create Signature" onPress={handleSubmit}/>    
+      </ThemedView>
+    );
+  }
 };
 
 let styles = StyleSheet.create({
