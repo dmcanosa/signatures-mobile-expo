@@ -32,6 +32,7 @@
     "@supabase/supabase-js": "^2.47.12",
     "@tanstack/react-query": "^5.64.2",
     "@types/humps": "^2.0.6",
+    "babel-plugin-module-resolver": "2.4.0",
     "expo": "54.0.23",
     "expo-blur": "~15.0.7",
     "expo-constants": "~18.0.10",
@@ -46,6 +47,8 @@
     "expo-system-ui": "~6.0.8",
     "expo-web-browser": "~15.0.9",
     "humps": "^2.0.1",
+    "metro-react-native-babel-transformer": "~0.77.0",
+    "next-crypto": "^1.0.8",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "^0.81.5",
@@ -60,8 +63,6 @@
     "react-native-web": "^0.21.0",
     "react-native-webview": "13.15.0",
     "react-native-worklets": "0.5.1",
-    "metro-react-native-babel-transformer": "~0.77.0",
-    "babel-plugin-module-resolver": "2.4.0",
     "yarn": "^1.22.22"
   },
   "devDependencies": {

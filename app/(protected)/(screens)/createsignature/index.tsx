@@ -7,9 +7,11 @@ import {
   PanResponder,
   StyleSheet,
   GestureResponderEvent,
+  Button,
 } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 import { decamelize } from "humps";
+import { createSignature } from "@/actions/actions";
 
 export type Point = {
   x: number;
@@ -71,6 +73,9 @@ const CreateSignatureScreen = ({
   const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
   const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
 
+  //const [signatureData, setSignatureData] = useState('');
+  //const [email, setEmail] = useState('');
+
   const onResponderRelease = () => {
     if (currentPoints.length < 1) return;
 
@@ -103,6 +108,20 @@ const CreateSignatureScreen = ({
     ]);
   };
 
+  const handleSubmit = () =>{
+    const formData = new FormData();
+    const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
+    const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
+    console.log('svg width: ',svgWidth);
+    console.log('strokes ',strokes);
+    const svgFromStrokes = convertStrokesToSvg(strokes, { width: svgWidth, height: svgHeight });
+    const encodedSvg = encodeURIComponent(svgFromStrokes);
+    const base64Svg = btoa(encodedSvg);
+    const sigString = `data:image/svg+xml;base64,${base64Svg}`;
+    formData.append('sigData', sigString);
+    console.log('sigData: ',sigString);
+  }
+
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (_) => true,
     onMoveShouldSetPanResponder: (_) => true,
@@ -114,26 +133,29 @@ const CreateSignatureScreen = ({
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Create your signature</ThemedText>
-      <View style={styles.svgContainer} {...panResponder.panHandlers}>
-      <Svg style={styles.drawSurface}>
-        <G>
-          {strokes.map((stroke) => (
-            <Path
+      
+
+        <View style={styles.svgContainer} {...panResponder.panHandlers}>
+        <Svg id='svgSignature' style={styles.drawSurface}>
+          <G>
+            {strokes.map((stroke) => (
+              <Path
               {...stroke.attributes}
               key={JSON.stringify(stroke.attributes)}
-            />
-          ))}
-          <Path
-            d={pointsToSvg(currentPoints)}
-            stroke={color}
-            strokeWidth={strokeWidth || 4}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </G>
-      </Svg>
-    </View>
+              />
+            ))}
+            <Path
+              d={pointsToSvg(currentPoints)}
+              stroke={color}
+              strokeWidth={strokeWidth || 4}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              />
+          </G>
+        </Svg>
+      </View>
+        <Button title="Create Signature" onPress={handleSubmit}/>    
     </ThemedView>
   );
 };
