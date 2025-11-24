@@ -147,7 +147,6 @@ const CreateSignatureScreen = ({
     return (<Redirect href="/" />);  
   }else{
     return (
-      
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your signature</ThemedText>
         

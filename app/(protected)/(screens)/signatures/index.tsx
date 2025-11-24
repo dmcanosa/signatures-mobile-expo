@@ -1,8 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { getSignatures } from '@/actions/actions';
 
 export default function SignaturesScreen() {
+  getSignatures();
+
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>My Signatures</ThemedText>

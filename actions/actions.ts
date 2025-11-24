@@ -117,4 +117,19 @@ export async function createSignature(formData: FormData) {
     //revalidatePath('/dashboard/signatures');
     //redirect('/dashboard/signatures');
   //}
-}
+  }
+
+  export async function getSignatures(){
+    const user = await supabase.auth.getUser();
+    console.log('user on get sig: ', user);
+    //console.log('formdata: ',formData.get('sigData'));
+    const uid = user.data.user?.id;
+    console.log('user id: ',uid);
+    
+    const { data, error } = await supabase
+        .from('signatures')
+        .select()
+        .eq('user_id', uid)
+      
+      console.log(data);  
+  }
