@@ -22,9 +22,9 @@ import { Buffer } from 'buffer';
 };*/
 
 
-  
-
 export async function createSignature(formData: FormData) {
+  const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
+
   /*const validatedFields = CreateSignature.safeParse({
     data: formData.get('svgString'),
   });
@@ -42,9 +42,6 @@ export async function createSignature(formData: FormData) {
 
   //const sb = await supabase();
   try {
-    const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
-
-
     const user = await supabase.auth.getUser();
     console.log('user on create sig: ', user);
     //console.log('formdata: ',formData.get('sigData'));
@@ -120,6 +117,8 @@ export async function createSignature(formData: FormData) {
   }
 
   export async function getSignatures(): Promise<any[]>{
+    const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
+
     const user = await supabase.auth.getUser();
     console.log('user on get sig: ', user);
     //console.log('formdata: ',formData.get('sigData'));
@@ -131,11 +130,48 @@ export async function createSignature(formData: FormData) {
         .select()
         .eq('user_id', uid)
     
+    console.log(data);
+
     if(error){
       return [];
     }else{
+      /*const decryptedSignatures:any[] = [];
+      
+      await Promise.all(data.map( async (sig) => {
+        //console.log('sigdata: ',sig.data);
+        try{
+          const decrypted = await crypto.decrypt(sig.data);
+          console.log('decrypted: ',decrypted);
+          //sig.sigData = decrypted;
+          
+          sig.data = decrypted;
+          sig.key = sig.id;
+          const date = new Date(sig.created);
+          //console.log('date: ', date.toDateString());
+          sig.created = date.toDateString();
+          decryptedSignatures.push(sig);
+        }catch(error){
+          console.log('error: ',error);  
+        }
+        console.log('dec: ',decryptedSignatures);
+
+        //return decryptedSignatures;
+        
+      }));*/
+
+      //return decryptedSignatures;
+      //let aux;
+      /*data.map(async (sig) => {
+        //aux = await crypto.decrypt(sig.data);
+        console.log('aux: ',await crypto.decrypt(sig.data));
+        //console.log(sig.data);
+      //sig.data = aux;  
+      });
+      
+      
+      console.log(data);
+      */
       return data;
     }    
-    //console.log(data);
         
   }

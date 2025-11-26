@@ -3,23 +3,66 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { getSignatures } from '@/actions/actions';
 import React, { useState, useEffect } from "react";
+import NextCrypto from 'next-crypto';
 
-const SignaturesScreen = () => {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+});
+
+export default function SignaturesScreen(){
   const [signatures, setSignatures] = useState<any[]>([]);
 
+  const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
+  const decryptedSignatures:any[] = [];
+      
   useEffect(() => {
-    (async function () {
+    const getSigs = async () => {
+      console.log('getSigs!');
       const sigs: any[] = await getSignatures();
-      setSignatures(sigs);
-      console.log('sigs: ',sigs);
-    })();
-    
+      setSignatures(sigs);  
+      
+      await Promise.all(sigs.map( async (sig) => {
+        const decrypted = await new Promise(resolve => {
+          crypto.decrypt(sig.data)
+        });
+        console.log('decrypted: ',decrypted);
+        sig.data = decrypted;
+        sig.key = sig.id;
+        const date = new Date(sig.created);
+        //console.log('date: ', date.toDateString());
+        sig.created = date.toDateString();
+        decryptedSignatures.push(sig);
+      }));
+    }
+    //const decryptedSignatures:any[] = await getSigs();
+    getSigs();
+    //setSignatures(decryptedSignatures);  
     //console.error(error);
   }, []);
+  
+  /*useEffect(() => {
+  (async function(){
+    console.log('getSigs!');
+    const sigs: any[] = await getSignatures();
+    setSignatures(sigs);
+  })();
+  }, []);*/
+    
+      
 
   const sigList = signatures.map((sig) => ( 
     <tr>
-      <td>{sig.id}</td>
+      <td key={sig.key}>{sig.key}</td>
     </tr>    
   ));
     
@@ -43,18 +86,6 @@ const SignaturesScreen = () => {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-});
 
-export default SignaturesScreen;
+
+//export default SignaturesScreen;
