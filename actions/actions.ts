@@ -119,7 +119,7 @@ export async function createSignature(formData: FormData) {
   //}
   }
 
-  export async function getSignatures(){
+  export async function getSignatures(): Promise<any[]>{
     const user = await supabase.auth.getUser();
     console.log('user on get sig: ', user);
     //console.log('formdata: ',formData.get('sigData'));
@@ -130,6 +130,12 @@ export async function createSignature(formData: FormData) {
         .from('signatures')
         .select()
         .eq('user_id', uid)
-      
-      console.log(data);  
+    
+    if(error){
+      return [];
+    }else{
+      return data;
+    }    
+    //console.log(data);
+        
   }
