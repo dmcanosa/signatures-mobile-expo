@@ -61,6 +61,9 @@ export async function createSignature(formData: FormData) {
       (async function () {
         const signature = await crypto.encrypt(sig);
         
+        //const signatureDec = await crypto.decrypt(signature);
+        //console.log('decrypted: ',signatureDec);
+
         const { error } = await supabase
           .from('signatures')
           .insert({ data: signature, active: true, user_id: uid })
@@ -130,7 +133,7 @@ export async function createSignature(formData: FormData) {
         .select()
         .eq('user_id', uid)
     
-    console.log(data);
+    //console.log(data);
 
     if(error){
       return [];

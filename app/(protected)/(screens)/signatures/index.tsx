@@ -23,18 +23,25 @@ export default function SignaturesScreen(){
   const [signatures, setSignatures] = useState<any[]>([]);
 
   const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
-  const decryptedSignatures:any[] = [];
       
   useEffect(() => {
+    const decryptedSignatures:any[] = [];
+    
     const getSigs = async () => {
       console.log('getSigs!');
       const sigs: any[] = await getSignatures();
-      setSignatures(sigs);  
-      
+      //setSignatures(sigs);  
+      //const decrypted = await crypto.decrypt(sigs[0].data);
+      //console.log('decrypted 0: ',decrypted);
+
       await Promise.all(sigs.map( async (sig) => {
-        const decrypted = await new Promise(resolve => {
+        console.log('decryp');
+        /*const decrypted = await new Promise(resolve => {
           crypto.decrypt(sig.data)
-        });
+        });*/
+
+        const decrypted = await crypto.decrypt(sig.data);
+
         console.log('decrypted: ',decrypted);
         sig.data = decrypted;
         sig.key = sig.id;
@@ -42,12 +49,17 @@ export default function SignaturesScreen(){
         //console.log('date: ', date.toDateString());
         sig.created = date.toDateString();
         decryptedSignatures.push(sig);
+        setSignatures([...signatures, sig]);
       }));
+      //return decryptedSignatures;
     }
     //const decryptedSignatures:any[] = await getSigs();
+    //console.log('sig ',getSigs());
     getSigs();
+    //setSignatures(decryptedSignatures);
     //setSignatures(decryptedSignatures);  
     //console.error(error);
+    console.log('sig ',signatures);
   }, []);
   
   /*useEffect(() => {
@@ -58,7 +70,7 @@ export default function SignaturesScreen(){
   })();
   }, []);*/
     
-      
+  console.log('sig ',signatures);    
 
   const sigList = signatures.map((sig) => ( 
     <tr>
