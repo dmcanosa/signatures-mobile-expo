@@ -109,10 +109,10 @@ const CreateSignatureScreen = ({
 
   const handleSubmit = async () =>{
     const formData = new FormData();
-    const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
-    const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
-    console.log('svg width: ',svgWidth);
-    const svgFromStrokes = convertStrokesToSvg(strokes, { width: svgWidth, height: svgHeight });
+    //const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
+    //const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
+    //console.log('svg width: ',svgWidth);
+    const svgFromStrokes = convertStrokesToSvg(strokes, { width: 640, height: 480 });
     const base64Svg = btoa(svgFromStrokes);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
