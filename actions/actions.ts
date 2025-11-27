@@ -1,9 +1,13 @@
-import { z } from 'zod';
+//import { z } from 'zod';
 import NextCrypto from 'next-crypto';
 import { supabase } from '@/config/supabase';
 import { Buffer } from 'buffer';
 
+if (typeof window !== 'undefined' && !window.Buffer) {
+  window.Buffer = Buffer;
+}
 
+const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
 
 /*const FormSchema = z.object({
   id: z.string(),
@@ -23,7 +27,7 @@ import { Buffer } from 'buffer';
 
 
 export async function createSignature(formData: FormData) {
-  const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
+  //const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
 
   /*const validatedFields = CreateSignature.safeParse({
     data: formData.get('svgString'),
@@ -36,9 +40,9 @@ export async function createSignature(formData: FormData) {
     };
   }*/
   
-  if (typeof window !== 'undefined' && !window.Buffer) {
+  /*if (typeof window !== 'undefined' && !window.Buffer) {
     window.Buffer = Buffer;
-  }
+  }*/
 
   //const sb = await supabase();
   try {
@@ -79,9 +83,9 @@ export async function createSignature(formData: FormData) {
   }  
 
   return {
-      success: true,
-      message: '',
-    };
+    success: true,
+    message: '',
+  };
 
   //return true;
   
@@ -138,31 +142,31 @@ export async function createSignature(formData: FormData) {
     if(error){
       return [];
     }else{
-      /*const decryptedSignatures:any[] = [];
+      const decryptedSignatures:any[] = [];
       
       await Promise.all(data.map( async (sig) => {
         //console.log('sigdata: ',sig.data);
         try{
           const decrypted = await crypto.decrypt(sig.data);
-          console.log('decrypted: ',decrypted);
+          //console.log('decrypted: ',decrypted);
+          const trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
+          //console.log('trimmed: ',trimmed);
           //sig.sigData = decrypted;
           
-          sig.data = decrypted;
+          sig.data = trimmed;
           sig.key = sig.id;
           const date = new Date(sig.created);
           //console.log('date: ', date.toDateString());
           sig.created = date.toDateString();
-          decryptedSignatures.push(sig);
+          decryptedSignatures?.push(sig);
         }catch(error){
           console.log('error: ',error);  
         }
-        console.log('dec: ',decryptedSignatures);
+        //console.log('dec: ',decryptedSignatures);
+      }));
 
-        //return decryptedSignatures;
-        
-      }));*/
-
-      //return decryptedSignatures;
+      //console.log('decSigs before return: ',decryptedSignatures);
+      return decryptedSignatures;
       //let aux;
       /*data.map(async (sig) => {
         //aux = await crypto.decrypt(sig.data);
@@ -171,10 +175,9 @@ export async function createSignature(formData: FormData) {
       //sig.data = aux;  
       });
       
-      
-      console.log(data);
       */
-      return data;
+      
+      //return data;
     }    
         
   }

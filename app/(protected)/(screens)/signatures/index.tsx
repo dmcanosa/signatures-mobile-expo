@@ -4,6 +4,12 @@ import { ThemedView } from '@/components/ThemedView';
 import { getSignatures } from '@/actions/actions';
 import React, { useState, useEffect } from "react";
 import NextCrypto from 'next-crypto';
+import { Buffer } from 'buffer';
+import { SvgXml } from 'react-native-svg';
+
+if (typeof window !== 'undefined' && !window.Buffer) {
+    window.Buffer = Buffer;
+  }  
 
 const styles = StyleSheet.create({
   container: {
@@ -21,66 +27,43 @@ const styles = StyleSheet.create({
 
 export default function SignaturesScreen(){
   const [signatures, setSignatures] = useState<any[]>([]);
+  const [sigList, setSignaturesList] = useState<any[]>([]);
 
-  const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
-      
   useEffect(() => {
-    const decryptedSignatures:any[] = [];
-    
-    const getSigs = async () => {
+    async function getSigs(){
       console.log('getSigs!');
       const sigs: any[] = await getSignatures();
-      //setSignatures(sigs);  
-      //const decrypted = await crypto.decrypt(sigs[0].data);
-      //console.log('decrypted 0: ',decrypted);
-
-      await Promise.all(sigs.map( async (sig) => {
-        console.log('decryp');
-        /*const decrypted = await new Promise(resolve => {
-          crypto.decrypt(sig.data)
-        });*/
-
-        const decrypted = await crypto.decrypt(sig.data);
-
-        console.log('decrypted: ',decrypted);
-        sig.data = decrypted;
-        sig.key = sig.id;
-        const date = new Date(sig.created);
-        //console.log('date: ', date.toDateString());
-        sig.created = date.toDateString();
-        decryptedSignatures.push(sig);
-        setSignatures([...signatures, sig]);
-      }));
-      //return decryptedSignatures;
+      //console.log('getSigs!',sigs);
+      setSignatures(sigs);
+      console.log('sigs state ',sigs);
+      setSignaturesList(sigs.map((sig) => ( 
+        <tr key={sig.key}>
+          <td key={sig.key}>
+            {sig.key}
+            {/*<SvgXml xml={sig.data} width="640" height="480" />
+            */}
+            <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">
+              <image href="data:image/svg+xml;base64,${sig.data}" width="640" height="480"/></svg>`} 
+              width="640" height="480" />
+          </td>
+        </tr>    
+      )));
+      console.log('sigList ',sigList);    
     }
-    //const decryptedSignatures:any[] = await getSigs();
-    //console.log('sig ',getSigs());
     getSigs();
-    //setSignatures(decryptedSignatures);
-    //setSignatures(decryptedSignatures);  
-    //console.error(error);
-    console.log('sig ',signatures);
+    
+    
   }, []);
   
-  /*useEffect(() => {
-  (async function(){
-    console.log('getSigs!');
-    const sigs: any[] = await getSignatures();
-    setSignatures(sigs);
-  })();
-  }, []);*/
-    
-  console.log('sig ',signatures);    
-
-  const sigList = signatures.map((sig) => ( 
+  console.log('sig2 ',signatures);    
+  
+  /*const sigList = signatures.map((sig) => ( 
     <tr>
-      <td key={sig.key}>{sig.key}</td>
+      <td key={sig.key}><SvgXml xml={sig.data} width="640" height="480" />
+      </td>
     </tr>    
-  ));
-    
+  ));*/
   
-  
-
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>My Signatures</ThemedText>
