@@ -12,7 +12,7 @@ import {
 import Svg, { G, Path } from "react-native-svg";
 import { decamelize } from "humps";
 import { createSignature } from "@/actions/actions";
-import { Redirect, useRouter } from 'expo-router';
+import { Redirect } from 'expo-router';
 
 export type Point = {
   x: number;
@@ -112,27 +112,14 @@ const CreateSignatureScreen = ({
     const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
     const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
     console.log('svg width: ',svgWidth);
-    //console.log('strokes ',strokes);
     const svgFromStrokes = convertStrokesToSvg(strokes, { width: svgWidth, height: svgHeight });
-    //const encodedSvg = encodeURIComponent(svgFromStrokes);
-    //console.log('svgfromstrokes: ',svgFromStrokes);
-    //const base64Svg = btoa(encodedSvg);
     const base64Svg = btoa(svgFromStrokes);
-    //console.log('sigDatabefore: ',base64Svg);
-    //const base64Svg = Buffer.toString('base64');//  encodedSvg);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
     const res = await createSignature(formData);
     if(res.success === true){
       setSigCreated(true);
     }
-    //if(await createSignature(formData) === true){
-      //const router = useRouter();
-      //router.navigate('/');
-
-    //}
-    //console.log('sigData: ',sigString);
-    //return <Redirect href="/" />;
   }
 
   const panResponder = PanResponder.create({
@@ -149,8 +136,6 @@ const CreateSignatureScreen = ({
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your signature</ThemedText>
-        
-          
           <View style={styles.svgContainer} {...panResponder.panHandlers}>
           <Svg id='svgSignature' style={styles.drawSurface}>
             <G>
