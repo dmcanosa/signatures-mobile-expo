@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gainsboro',
     marginBottom: 20,
     alignItems: 'center',
+    width: '80%',
   },
 });
 
