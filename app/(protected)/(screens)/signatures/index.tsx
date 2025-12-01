@@ -53,6 +53,7 @@ const SignaturesScreen = () => {
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>My Signatures</ThemedText>
         <FlatList
+          style={styles.flatlistStyles}
           data={signatures}
           renderItem={({item}) => <Item data={item.data} active={item.active} created={item.created}/>}
           keyExtractor={item => item.id}
@@ -69,6 +70,9 @@ const styles = StyleSheet.create({
     padding: 20,
     
   },
+  flatlistStyles:{
+    width: '90%'
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -82,9 +86,10 @@ const styles = StyleSheet.create({
   sigContainer: {
     backgroundColor: 'gainsboro',
     marginBottom: 20,
+    display: 'flex',
     alignItems: 'center',
-    width: '80%',
-    maxWidth: '80%',
+    justifyContent: 'center',
+    flexShrink: 1,
   },
 });
 
