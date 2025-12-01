@@ -18,6 +18,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
     "@dev-plugins/react-query": "^0.1.0",
     "@emotion/native": "^11.11.0",
     "@emotion/react": "^11.14.0",
@@ -49,11 +50,11 @@
     "expo-web-browser": "~15.0.9",
     "humps": "^2.0.1",
     "metro-react-native-babel-transformer": "~0.77.0",
-    "next-crypto": "^1.0.8",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "^0.81.5",
     "react-native-async-storage": "^0.0.1",
+    "react-native-config": "^1.6.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~4.1.1",
@@ -71,6 +72,7 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-react": "^7.28.5",
     "@react-native-community/cli": "latest",
+    "@react-native/metro-config": "0.82.1",
     "@tanstack/eslint-plugin-query": "^5.64.2",
     "@types/jest": "^29.5.12",
     "@types/react": "~19.1.0",

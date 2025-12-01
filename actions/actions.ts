@@ -4,14 +4,16 @@ import { supabase } from '@/config/supabase';
 import { AES, Utf8 } from 'crypto-es';
 //import Config from 'react-native-config';
 import { SECRET_SIGNATURE_KEY } from '@env';
-//import { Buffer } from 'buffer';
+/*import { Buffer } from 'buffer';
 
-/*if (typeof window !== 'undefined' && !window.Buffer) {
+if (typeof window !== 'undefined' && !window.Buffer) {
   window.Buffer = Buffer;
 }*/
 
 //const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
 const secretSigKey = SECRET_SIGNATURE_KEY as string;
+//const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
+//const secretSigKey = Config.SECRET_SIGNATURE_KEY as string;
 
 /*const FormSchema = z.object({
   id: z.string(),
