@@ -4,6 +4,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { getSignatures } from '@/actions/actions';
 import React, { useState, useEffect } from "react";
 import { SvgXml } from 'react-native-svg';
+import { Base64 } from 'js-base64';
 
 const SignaturesScreen = () => {
   const [signatures, setSignatures] = useState<any[]>([]);
@@ -12,7 +13,7 @@ const SignaturesScreen = () => {
     async function getSigs(){
       const sigs: any[] = await getSignatures();
       setSignatures(sigs);
-      console.log('sigs: ', sigs);
+      //console.log('sigs: ', sigs);
     }
     getSigs();
   }, []);
@@ -22,9 +23,28 @@ const SignaturesScreen = () => {
   const Item = ({data, created, active}: ItemProps) => (
     <View style={styles.sigContainer}>
       <Text style={styles.sigTitle}>{'Active: '+active}</Text>
+      {/*
       <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">
               <image href="data:image/svg+xml;base64,${data}" width="640" height="480"/></svg>`} 
               width="640" height="480" />
+      */}
+      {
+      <SvgXml xml={Base64.decode(data) as string} width="640" height="480" />
+      }
+      {/*
+      <Svg width="640" height="480">
+              <Image href=`data:image/png;base64,{data}` width="640" height="480"/>
+      </Svg> 
+      */} 
+      {/*
+      <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">
+              <Image source={{ uri:"data:image/png;base64,${data}"}} width="640" height="480"/></svg>`} 
+              width="640" height="480" />
+      */}
+      {/*
+      <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">${data}</svg>`} 
+              width="640" height="480" />
+      */}        
       <Text style={styles.sigTitle}>{'Created: '+created}</Text>
     </View>
   );
@@ -47,6 +67,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    
   },
   title: {
     fontSize: 24,
@@ -62,6 +83,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'gainsboro',
     marginBottom: 20,
     alignItems: 'center',
+    width: '80%',
+    maxWidth: '80%',
   },
 });
 

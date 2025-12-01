@@ -109,7 +109,7 @@ export async function getSignatures(): Promise<any[]>{
       try{
         //const decrypted = await crypto.decrypt(sig.data);
         const decrypted = AES.decrypt(sig.data, secretSigKey).toString(Utf8);
-        console.log('decrypted sig: ', decrypted);
+        //console.log('decrypted sig: ', decrypted);
 
         const trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
         sig.data = trimmed;
