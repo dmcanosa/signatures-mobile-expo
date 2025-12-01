@@ -61,11 +61,11 @@ export async function createSignature(formData: FormData) {
       //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
       
       //const signature = await crypto.encrypt(sig);
-      console.log('sig to encrypt: ', sig);
+      //console.log('sig to encrypt: ', sig);
       console.log('key to encrypt: ', secretSigKey);
       
       const encryptedSig = AES.encrypt(sig, secretSigKey).toString();
-      console.log('sig to encrypt: ', encryptedSig);
+      //console.log('sig to encrypt: ', encryptedSig);
 
       const { error } = await supabase
         .from('signatures')
@@ -107,8 +107,8 @@ export async function getSignatures(): Promise<any[]>{
       try{
         //const decrypted = await crypto.decrypt(sig.data);
         const decrypted = AES.decrypt(sig.data, secretSigKey).toString(Utf8);
-        console.log('decrypted sig: ', decrypted);
-        
+        //console.log('decrypted sig: ', decrypted);
+
         const trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
         sig.data = trimmed;
         sig.key = sig.id;
