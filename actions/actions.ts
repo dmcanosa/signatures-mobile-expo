@@ -1,13 +1,17 @@
 //import { z } from 'zod';
-import NextCrypto from 'next-crypto';
+//import NextCrypto from 'next-crypto';
 import { supabase } from '@/config/supabase';
-import { Buffer } from 'buffer';
+import { AES, Utf8 } from 'crypto-es';
+//import Config from 'react-native-config';
+import { SECRET_SIGNATURE_KEY } from '@env';
+//import { Buffer } from 'buffer';
 
-if (typeof window !== 'undefined' && !window.Buffer) {
+/*if (typeof window !== 'undefined' && !window.Buffer) {
   window.Buffer = Buffer;
-}
+}*/
 
-const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
+//const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
+const secretSigKey = SECRET_SIGNATURE_KEY as string;
 
 /*const FormSchema = z.object({
   id: z.string(),
@@ -26,6 +30,8 @@ const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
 };*/
 
 export async function createSignature(formData: FormData) {
+  //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
+  
   /*const validatedFields = CreateSignature.safeParse({
     data: formData.get('svgString'),
   });
@@ -52,10 +58,18 @@ export async function createSignature(formData: FormData) {
     console.log(error);
       
     (async function () {
-      const signature = await crypto.encrypt(sig);
+      //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
+      
+      //const signature = await crypto.encrypt(sig);
+      console.log('sig to encrypt: ', sig);
+      console.log('key to encrypt: ', secretSigKey);
+      
+      const encryptedSig = AES.encrypt(sig, secretSigKey).toString();
+      console.log('sig to encrypt: ', encryptedSig);
+
       const { error } = await supabase
         .from('signatures')
-        .insert({ data: signature, active: true, user_id: uid })
+        .insert({ data: encryptedSig, active: true, user_id: uid })
       
       console.log(error);  
     })();
@@ -72,6 +86,9 @@ export async function createSignature(formData: FormData) {
 }
 
 export async function getSignatures(): Promise<any[]>{
+  //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
+
+  
   const user = await supabase.auth.getUser();
   console.log('user on get sig: ', user);
   const uid = user.data.user?.id;
@@ -88,7 +105,10 @@ export async function getSignatures(): Promise<any[]>{
     const decryptedSignatures:any[] = [];
     await Promise.all(data.map( async (sig) => {
       try{
-        const decrypted = await crypto.decrypt(sig.data);
+        //const decrypted = await crypto.decrypt(sig.data);
+        const decrypted = AES.decrypt(sig.data, secretSigKey).toString(Utf8);
+        console.log('decrypted sig: ', decrypted);
+        
         const trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
         sig.data = trimmed;
         sig.key = sig.id;
