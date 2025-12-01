@@ -53,7 +53,8 @@ const SignaturesScreen = () => {
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>My Signatures</ThemedText>
         <FlatList
-          style={styles.flatlistStyles}
+          contentContainerStyle={styles.flatlistContentStyles}
+          //style={styles.flatlistStyles}
           data={signatures}
           renderItem={({item}) => <Item data={item.data} active={item.active} created={item.created}/>}
           keyExtractor={item => item.id}
@@ -65,13 +66,22 @@ const SignaturesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
     
   },
   flatlistStyles:{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: '90%'
+  },
+  flatlistContentStyles:{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
