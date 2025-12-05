@@ -8,6 +8,7 @@ import {
   StyleSheet,
   GestureResponderEvent,
   Button,
+  Dimensions
 } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 import { decamelize } from "humps";
@@ -36,6 +37,8 @@ export type Stroke = {
   attributes: Record<string, string | number>;
   type: string;
 };
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export const convertStrokesToSvg = (
   strokes: Stroke[],
@@ -130,13 +133,15 @@ const CreateSignatureScreen = ({
     onPanResponderRelease: () => onResponderRelease(),
   });
 
+  const viewHeight = screenWidth * 0.75;
+
   if(sigCreated === true){
     return (<Redirect href="/" />);  
   }else{
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your signature</ThemedText>
-          <View style={styles.svgContainer} {...panResponder.panHandlers}>
+          <View style={[styles.svgContainer, { maxHeight: viewHeight, width: screenWidth }]} {...panResponder.panHandlers}>
           <Svg style={styles.drawSurface} >
             <G style={styles.GdrawSurface}>
               {strokes.map((stroke) => (
@@ -175,8 +180,6 @@ let styles = StyleSheet.create({
   svgContainer: {
     flex: 1,
     backgroundColor: "#fff",
-    maxHeight: 480,
-    width: 'auto',
     aspectRatio: 4/3,
   },
   drawSurface: {

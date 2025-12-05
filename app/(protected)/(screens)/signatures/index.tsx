@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList, View, Text } from 'react-native';
+import { StyleSheet, FlatList, View, Text, Dimensions } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { getSignatures } from '@/actions/actions';
@@ -7,7 +7,8 @@ import { SvgXml } from 'react-native-svg';
 
 const SignaturesScreen = () => {
   const [signatures, setSignatures] = useState<any[]>([]);
-  
+  const { width: screenWidth } = Dimensions.get('window');
+
   useEffect(() => {
     async function getSigs(){
       const sigs: any[] = await getSignatures();
@@ -53,7 +54,7 @@ const SignaturesScreen = () => {
       <ThemedText style={styles.title}>My Signatures</ThemedText>
         <FlatList
           contentContainerStyle={styles.flatlistContentStyles}
-          //style={styles.flatlistStyles}
+          style={[styles.flatlistStyles, { width: screenWidth }]}
           data={signatures}
           renderItem={({item}) => <Item data={item.data} active={item.active} created={item.created}/>}
           keyExtractor={item => item.id}
@@ -72,10 +73,7 @@ const styles = StyleSheet.create({
     
   },
   flatlistStyles:{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '90%'
+    
   },
   flatlistContentStyles:{
     display: 'flex',
