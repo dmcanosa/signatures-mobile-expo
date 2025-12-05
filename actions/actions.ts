@@ -1,19 +1,14 @@
 //import { z } from 'zod';
-//import NextCrypto from 'next-crypto';
 import { supabase } from '@/config/supabase';
 import { AES, Utf8 } from 'crypto-es';
-//import Config from 'react-native-config';
-//import { SECRET_SIGNATURE_KEY } from '@env';
+import { Base64 } from 'js-base64';
 /*import { Buffer } from 'buffer';
 
 if (typeof window !== 'undefined' && !window.Buffer) {
   window.Buffer = Buffer;
 }*/
 
-//const crypto = new NextCrypto(process.env.SECRET_SIGNATURE_KEY as string);
 const secretSigKey = process.env.EXPO_PUBLIC_SECRET_SIGNATURE_KEY as string;
-//const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
-//const secretSigKey = Config.SECRET_SIGNATURE_KEY as string;
 
 /*const FormSchema = z.object({
   id: z.string(),
@@ -112,7 +107,9 @@ export async function getSignatures(): Promise<any[]>{
         //console.log('decrypted sig: ', decrypted);
 
         const trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
-        sig.data = trimmed;
+        const decoded = Base64.decode(trimmed as string);
+        //console.log('decoded sig: ', decoded);
+        sig.data = decoded;
         sig.key = sig.id;
         const date = new Date(sig.created);
         sig.created = date.toDateString();

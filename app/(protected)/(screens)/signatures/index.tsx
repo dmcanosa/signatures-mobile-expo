@@ -4,7 +4,6 @@ import { ThemedView } from '@/components/ThemedView';
 import { getSignatures } from '@/actions/actions';
 import React, { useState, useEffect } from "react";
 import { SvgXml } from 'react-native-svg';
-import { Base64 } from 'js-base64';
 
 const SignaturesScreen = () => {
   const [signatures, setSignatures] = useState<any[]>([]);
@@ -29,7 +28,7 @@ const SignaturesScreen = () => {
               width="640" height="480" />
       */}
       {
-      <SvgXml xml={Base64.decode(data) as string} width="640" height="480" />
+      <SvgXml xml={data} style={styles.svgElement} preserveAspectRatio="xMidYMid meet" viewBox='0 0 640 480' />
       }
       {/*
       <Svg width="640" height="480">
@@ -101,6 +100,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 1,
   },
+  svgElement:{
+    width: '100%', 
+    height: '100%',
+    aspectRatio: 4/3, 
+  }
 });
 
 export default SignaturesScreen;

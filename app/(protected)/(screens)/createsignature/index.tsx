@@ -137,8 +137,8 @@ const CreateSignatureScreen = ({
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your signature</ThemedText>
           <View style={styles.svgContainer} {...panResponder.panHandlers}>
-          <Svg id='svgSignature' style={styles.drawSurface}>
-            <G>
+          <Svg style={styles.drawSurface} >
+            <G style={styles.GdrawSurface}>
               {strokes.map((stroke) => (
                 <Path
                 {...stroke.attributes}
@@ -162,21 +162,42 @@ const CreateSignatureScreen = ({
   }
 };
 
+/*
+
+<Svg style={styles.drawSurface} preserveAspectRatio="xMidYMid meet" viewBox='0 0 640 480'>
+  <G style={styles.GdrawSurface}>
+          
+
+  transform: [{ scale: 1 }],
+*/
+
 let styles = StyleSheet.create({
   svgContainer: {
     flex: 1,
     backgroundColor: "#fff",
-    maxHeight: "30%",
-    width: "30%"
+    maxHeight: 480,
+    width: 'auto',
+    aspectRatio: 4/3,
   },
   drawSurface: {
     flex: 1,
+    height: '100%',
+    aspectRatio: 4/3,
+    width: '100%',
+      //maxHeight: '30vh',
+      //width: '40vh',
+  
+  },
+  GdrawSurface: {
+    
   },
   container: {
     flex: 1,
     alignItems: 'center',
     //justifyContent: 'center',
     padding: 20,
+    //maxHeight: '30vh',
+      //width: '40vh',
   },
   title: {
     fontSize: 24,
