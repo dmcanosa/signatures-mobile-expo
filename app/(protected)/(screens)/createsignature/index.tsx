@@ -38,14 +38,13 @@ export type Stroke = {
   type: string;
 };
 
-const { width: screenWidth } = Dimensions.get('window');
 
 export const convertStrokesToSvg = (
   strokes: Stroke[],
   { width, height }: { width: number; height: number }
 ): string => {
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" version="1.1">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" version="1.1">
       <g>
         ${strokes
           .map(
@@ -65,6 +64,9 @@ export const convertStrokesToSvg = (
   `;
 };
 
+//<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" version="1.1">
+    
+
 type SignatureProps = {
   strokeWidth?: number;
   color?: string;
@@ -77,6 +79,8 @@ const CreateSignatureScreen = ({
   const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
   const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
   const [sigCreated, setSigCreated] = useState(false);
+  const { width: screenWidth } = Dimensions.get('window');
+
 
   const onResponderRelease = () => {
     if (currentPoints.length < 1) return;
@@ -115,7 +119,7 @@ const CreateSignatureScreen = ({
     //const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
     //const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
     //console.log('svg width: ',svgWidth);
-    const svgFromStrokes = convertStrokesToSvg(strokes, { width: 640, height: 480 });
+    const svgFromStrokes = convertStrokesToSvg(strokes, { width: screenWidth, height: screenWidth * 0.75 });
     const base64Svg = btoa(svgFromStrokes);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
@@ -133,7 +137,7 @@ const CreateSignatureScreen = ({
     onPanResponderRelease: () => onResponderRelease(),
   });
 
-  const viewHeight = screenWidth * 0.75;
+  //const viewHeight = screenWidth * 0.75;
 
   if(sigCreated === true){
     return (<Redirect href="/" />);  
@@ -141,8 +145,8 @@ const CreateSignatureScreen = ({
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your signature</ThemedText>
-          <View style={[styles.svgContainer, { maxHeight: viewHeight, width: screenWidth }]} {...panResponder.panHandlers}>
-          <Svg style={styles.drawSurface} >
+          <View style={[styles.svgContainer, { maxHeight: screenWidth * 0.75, width: screenWidth }]} {...panResponder.panHandlers}>
+          <Svg style={styles.drawSurface}  preserveAspectRatio="xMidYMid meet"  >
             <G style={styles.GdrawSurface}>
               {strokes.map((stroke) => (
                 <Path

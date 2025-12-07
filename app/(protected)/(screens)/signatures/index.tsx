@@ -18,36 +18,18 @@ const SignaturesScreen = () => {
     getSigs();
   }, []);
   
-  type ItemProps = {data: string, created: string, active: boolean};
+  type ItemProps = {data: string, created: string, active: boolean, width:number };
 
-  const Item = ({data, created, active}: ItemProps) => (
+  const Item = ({data, created, active, width}: ItemProps) => (
     <View style={styles.sigContainer}>
       <Text style={styles.sigTitle}>{'Active: '+active}</Text>
-      {/*
-      <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">
-              <image href="data:image/svg+xml;base64,${data}" width="640" height="480"/></svg>`} 
-              width="640" height="480" />
-      */}
-      {
-      <SvgXml xml={data} style={styles.svgElement} preserveAspectRatio="xMidYMid meet" viewBox='0 0 640 480' />
-      }
-      {/*
-      <Svg width="640" height="480">
-              <Image href=`data:image/png;base64,{data}` width="640" height="480"/>
-      </Svg> 
-      */} 
-      {/*
-      <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">
-              <Image source={{ uri:"data:image/png;base64,${data}"}} width="640" height="480"/></svg>`} 
-              width="640" height="480" />
-      */}
-      {/*
-      <SvgXml xml={`<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480">${data}</svg>`} 
-              width="640" height="480" />
-      */}        
+        <SvgXml xml={data} style={styles.svgElement} preserveAspectRatio="xMidYMid meet" />
       <Text style={styles.sigTitle}>{'Created: '+created}</Text>
     </View>
   );
+
+  //<SvgXml xml={data} style={styles.svgElement} preserveAspectRatio="xMidYMid meet" viewBox={'0 0 '+width+' '+(width * 0.75)} />
+
 
   return (
     <ThemedView style={styles.container}>
@@ -56,7 +38,7 @@ const SignaturesScreen = () => {
           contentContainerStyle={styles.flatlistContentStyles}
           style={[styles.flatlistStyles, { width: screenWidth }]}
           data={signatures}
-          renderItem={({item}) => <Item data={item.data} active={item.active} created={item.created}/>}
+          renderItem={({item}) => <Item data={item.data} active={item.active} created={item.created} width={screenWidth}/>}
           keyExtractor={item => item.id}
         />
     </ThemedView>
@@ -73,7 +55,8 @@ const styles = StyleSheet.create({
     
   },
   flatlistStyles:{
-    
+    display: 'flex',
+    width: '90%',
   },
   flatlistContentStyles:{
     display: 'flex',
