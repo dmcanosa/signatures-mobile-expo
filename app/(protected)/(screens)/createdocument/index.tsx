@@ -8,15 +8,19 @@ import {
   StyleSheet,
   GestureResponderEvent,
   Button,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from "react-native";
 import { createDocument } from "@/actions/actions";
 import { Redirect } from 'expo-router';
+import * as DocumentPicker from 'expo-document-picker';
 
 const CreateDocumentScreen = () => {
   //const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
   //const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
+  const [fileUploaded, setFileUploaded] = useState<any>(null);
   const [docCreated, setDocCreated] = useState(false);
+  
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   var sigWidth = screenWidth;
   var sigHeight = screenHeight;
@@ -27,6 +31,27 @@ const CreateDocumentScreen = () => {
   }else{
     sigHeight = screenWidth * 0.75;
     sigWidth = screenWidth;
+  }
+
+  const handleFilePicker = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*', // Allows selecting any type of document
+        copyToCacheDirectory: true, // Copies the selected file to the app's cache directory
+      });
+
+      if (result.canceled) {
+        console.log('Document picking cancelled.');
+        setFileUploaded(null);
+      } else {
+        // Access the first asset in the assets array if available, otherwise use the direct result
+        const asset = result.assets && result.assets.length > 0 ? result.assets[0] : result;
+        setFileUploaded(asset);
+        console.log('Picked Document:', asset);
+      }
+    } catch (error) {
+      console.error('Error picking document:', error);
+    }
   }
 
   const handleSubmit = async () =>{
@@ -49,9 +74,13 @@ const CreateDocumentScreen = () => {
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your document</ThemedText>
+          <TouchableOpacity style={styles.logoutLink} onPress={handleFilePicker}>
+            <ThemedText style={styles.linkText}>🚪 Upload Template</ThemedText>
+          </TouchableOpacity>
+
           <View style={[styles.svgContainer, { maxHeight: sigHeight, width: sigWidth }]} >
           
-        </View>
+          </View>
           <Button title="Create Document" onPress={handleSubmit}/>    
       </ThemedView>
     );
@@ -82,6 +111,16 @@ let styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  logoutLink: {
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#b04435',
+  },
+  linkText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 
