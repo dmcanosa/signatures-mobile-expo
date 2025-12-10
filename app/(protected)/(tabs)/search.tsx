@@ -13,7 +13,7 @@ import { filterCars } from '@/components/SearchFilters';
 import styled from '@emotion/native';
 import { useTheme } from '@emotion/react';
 import { useVehicles } from '@/services/supabase.api';
-
+/*
 const StyledContainer = styled.View(({ theme }) => ({
   flex: 1,
   backgroundColor: theme.colors.background,
@@ -237,5 +237,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee",
   },
 });
-
-export default SearchScreen;
+*/
+//export default SearchScreen;

@@ -4,21 +4,21 @@ import { Link } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function SignaturesTabScreen() {
+export default function DocumentsTabScreen() {
 
   return (
     <ThemedView style={styles.container}>
 
       <View style={styles.linksContainer}>
 
-        <ThemedText style={styles.linkText}>Welcome to the signatures page</ThemedText>
+        <ThemedText style={styles.linkText}>Welcome to the documents page</ThemedText>
         
-        <Link href="/createsignature" style={styles.link}>
-          <ThemedText style={styles.linkText}>📋 Create a signature</ThemedText>
+        <Link href="/createdocument" style={styles.link}>
+          <ThemedText style={styles.linkText}>📋 Create a document</ThemedText>
         </Link>
 
-        <Link href="/signatures" style={styles.link}>
-          <ThemedText style={styles.linkText}>❓ Signatures</ThemedText>
+        <Link href="/documents" style={styles.link}>
+          <ThemedText style={styles.linkText}>❓ Documents</ThemedText>
         </Link>
 
       </View>

@@ -82,6 +82,32 @@ export async function createSignature(formData: FormData) {
   };
 }
 
+export async function createDocument(formData: FormData) {
+  try {
+    const user = await supabase.auth.getUser();
+    console.log('user on create doc: ', user);
+    const uid = user.data.user?.id;
+    console.log('user id: ',uid);
+      
+    (async function () {
+      const { error } = await supabase
+        .from('documents')
+        .insert({ user_id: uid })
+      
+      console.log(error);  
+    })();
+  } catch (error) {
+    return {
+      success: false,
+      message: 'Database Error: Failed to Create Document.'+error,
+    };
+  }  
+  return {
+    success: true,
+    message: '',
+  };
+}
+
 export async function getSignatures(): Promise<any[]>{
   //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
 
@@ -120,5 +146,47 @@ export async function getSignatures(): Promise<any[]>{
     }));
 
     return decryptedSignatures;
+  }    
+}
+
+export async function getDocuments(): Promise<any[]>{
+  //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
+
+  
+  const user = await supabase.auth.getUser();
+  console.log('user on get sig: ', user);
+  const uid = user.data.user?.id;
+  console.log('user id: ',uid);
+  
+  const { data, error } = await supabase
+      .from('documents')
+      .select()
+      .eq('user_id', uid)
+  
+  if(error){
+    return [];
+  }else{
+    //const decryptedSignatures:any[] = [];
+    
+    /*await Promise.all(data.map( async (sig) => {
+      try{
+        //const decrypted = await crypto.decrypt(sig.data);
+        const decrypted = AES.decrypt(sig.data, secretSigKey).toString(Utf8);
+        //console.log('decrypted sig: ', decrypted);
+
+        const trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
+        const decoded = Base64.decode(trimmed as string);
+        //console.log('decoded sig: ', decoded);
+        sig.data = decoded;
+        sig.key = sig.id;
+        const date = new Date(sig.created);
+        sig.created = date.toDateString();
+        decryptedSignatures?.push(sig);
+      }catch(error){
+        console.log('error: ',error);  
+      }
+    }));*/
+
+    return data;
   }    
 }

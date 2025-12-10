@@ -125,9 +125,6 @@ const CreateSignatureScreen = ({
 
   const handleSubmit = async () =>{
     const formData = new FormData();
-    //const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
-    //const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
-    //console.log('svg width: ',svgWidth);
     const svgFromStrokes = convertStrokesToSvg(strokes, { width: sigWidth, height: sigHeight });
     const base64Svg = btoa(svgFromStrokes);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
@@ -145,8 +142,6 @@ const CreateSignatureScreen = ({
     onPanResponderMove: onTouch,
     onPanResponderRelease: () => onResponderRelease(),
   });
-
-  //const viewHeight = screenWidth * 0.75;
 
   if(sigCreated === true){
     return (<Redirect href="/" />);  
@@ -180,15 +175,6 @@ const CreateSignatureScreen = ({
   }
 };
 
-/*
-
-<Svg style={styles.drawSurface} preserveAspectRatio="xMidYMid meet" viewBox='0 0 640 480'>
-  <G style={styles.GdrawSurface}>
-          
-
-  transform: [{ scale: 1 }],
-*/
-
 let styles = StyleSheet.create({
   svgContainer: {
     flex: 1,
@@ -200,9 +186,6 @@ let styles = StyleSheet.create({
     height: '100%',
     aspectRatio: 4/3,
     width: '100%',
-      //maxHeight: '30vh',
-      //width: '40vh',
-  
   },
   GdrawSurface: {
     
@@ -210,10 +193,7 @@ let styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    //justifyContent: 'center',
     padding: 20,
-    //maxHeight: '30vh',
-      //width: '40vh',
   },
   title: {
     fontSize: 24,

@@ -1,21 +1,21 @@
 import { StyleSheet, FlatList, View, Text, Dimensions } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { getSignatures } from '@/actions/actions';
+import { getDocuments } from '@/actions/actions';
 import React, { useState, useEffect } from "react";
 import { SvgXml } from 'react-native-svg';
 
-const SignaturesScreen = () => {
-  const [signatures, setSignatures] = useState<any[]>([]);
+const DocumentsScreen = () => {
+  const [documents, setDocuments] = useState<any[]>([]);
   const { width: screenWidth } = Dimensions.get('window');
 
   useEffect(() => {
-    async function getSigs(){
-      const sigs: any[] = await getSignatures();
-      setSignatures(sigs);
+    async function getDocs(){
+      const sigs: any[] = await getDocuments();
+      setDocuments(sigs);
       //console.log('sigs: ', sigs);
     }
-    getSigs();
+    getDocs();
   }, []);
   
   type ItemProps = {data: string, created: string, active: boolean };
@@ -34,7 +34,7 @@ const SignaturesScreen = () => {
         <FlatList
           contentContainerStyle={styles.flatlistContentStyles}
           style={[styles.flatlistStyles, { width: screenWidth }]}
-          data={signatures}
+          data={documents}
           renderItem={({item}) => <Item data={item.data} active={item.active} created={item.created}/>}
           keyExtractor={item => item.id}
         />
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignaturesScreen;
+export default DocumentsScreen;
