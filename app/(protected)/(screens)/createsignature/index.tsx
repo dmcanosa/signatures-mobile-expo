@@ -79,8 +79,17 @@ const CreateSignatureScreen = ({
   const [currentPoints, setCurrentPoints] = useState<Point[]>([]);
   const [strokes, setPreviousStrokes] = useState<Stroke[]>([])
   const [sigCreated, setSigCreated] = useState(false);
-  const { width: screenWidth } = Dimensions.get('window');
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+  var sigWidth = screenWidth;
+  var sigHeight = screenHeight;
 
+  if(screenWidth > screenHeight){
+    sigHeight = (screenWidth * .4) * 0.75;
+    sigWidth = (screenWidth * .4);
+  }else{
+    sigHeight = screenWidth * 0.75;
+    sigWidth = screenWidth;
+  }
 
   const onResponderRelease = () => {
     if (currentPoints.length < 1) return;
@@ -119,7 +128,7 @@ const CreateSignatureScreen = ({
     //const svgWidth:number = document.getElementById('svgSignature')?.clientWidth as number;
     //const svgHeight:number = document.getElementById('svgSignature')?.clientHeight as number;
     //console.log('svg width: ',svgWidth);
-    const svgFromStrokes = convertStrokesToSvg(strokes, { width: screenWidth, height: screenWidth * 0.75 });
+    const svgFromStrokes = convertStrokesToSvg(strokes, { width: sigWidth, height: sigHeight });
     const base64Svg = btoa(svgFromStrokes);
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
@@ -145,7 +154,7 @@ const CreateSignatureScreen = ({
     return (
       <ThemedView style={styles.container}>
         <ThemedText style={styles.title}>Create your signature</ThemedText>
-          <View style={[styles.svgContainer, { maxHeight: screenWidth * 0.75, width: screenWidth }]} {...panResponder.panHandlers}>
+          <View style={[styles.svgContainer, { maxHeight: sigHeight, width: sigWidth }]} {...panResponder.panHandlers}>
           <Svg style={styles.drawSurface}  preserveAspectRatio="xMidYMid meet"  >
             <G style={styles.GdrawSurface}>
               {strokes.map((stroke) => (
