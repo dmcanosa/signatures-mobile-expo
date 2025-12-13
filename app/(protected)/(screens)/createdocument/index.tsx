@@ -78,9 +78,11 @@ const CreateDocumentScreen = () => {
             <ThemedText style={styles.linkText}>🚪 Upload Template</ThemedText>
           </TouchableOpacity>
 
+          {/*
           <View style={[styles.svgContainer, { maxHeight: sigHeight, width: sigWidth }]} >
           
           </View>
+          */}
           <Button title="Create Document" onPress={handleSubmit}/>    
       </ThemedView>
     );
@@ -115,7 +117,7 @@ let styles = StyleSheet.create({
   logoutLink: {
     padding: 15,
     borderRadius: 10,
-    backgroundColor: '#b04435',
+    backgroundColor: 'cornflowerblue',
   },
   linkText: {
     color: 'white',
