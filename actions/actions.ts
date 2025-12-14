@@ -1,7 +1,9 @@
 //import { z } from 'zod';
 import { supabase } from '@/config/supabase';
-import { AES, Utf8 } from 'crypto-es';
 import { Base64 } from 'js-base64';
+import * as Crypto from 'expo-crypto';
+import { AES, CBC, Pkcs7, PBKDF2, WordArray, Utf8 } from 'crypto-es';
+      
 /*import { Buffer } from 'buffer';
 
 if (typeof window !== 'undefined' && !window.Buffer) {
@@ -61,7 +63,21 @@ export async function createSignature(formData: FormData) {
       //console.log('sig to encrypt: ', sig);
       console.log('key to encrypt: ', secretSigKey);
       
-      const encryptedSig = AES.encrypt(sig, secretSigKey).toString();
+      const salt = WordArray.random(128/8);
+      const key256 = PBKDF2(secretSigKey, salt, { keySize: 256/32 });
+      const iv = WordArray.random(128/8);
+      
+      //console.log('SALT: ', salt.toString());
+      const encryptedSig = AES.encrypt(
+        sig, 
+        key256, 
+        { iv: iv, 
+          mode: CBC, 
+          padding: Pkcs7 
+        }
+      ).toString();
+      
+      //const encryptedSig = AES.encrypt(sig, secretSigKey).toString();
       //console.log('sig to encrypt: ', encryptedSig);
 
       const { error } = await supabase
