@@ -126,7 +126,12 @@ const CreateSignatureScreen = ({
   const handleSubmit = async () =>{
     const formData = new FormData();
     const svgFromStrokes = convertStrokesToSvg(strokes, { width: sigWidth, height: sigHeight });
+    console.log('screen width: ', sigWidth);
+    console.log('screen height: ', sigHeight);
+    //console.log('svgfrom strokes: ', svgFromStrokes);
     const base64Svg = btoa(svgFromStrokes);
+    //console.log('base64 svg: ', base64Svg);
+    
     const sigString = `data:image/svg+xml;base64,${base64Svg}`;
     formData.append('sigData', sigString);
     const res = await createSignature(formData);

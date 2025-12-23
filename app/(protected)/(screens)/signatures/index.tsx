@@ -13,7 +13,7 @@ const SignaturesScreen = () => {
     async function getSigs(){
       const sigs: any[] = await getSignatures();
       setSignatures(sigs);
-      //console.log('sigs: ', sigs);
+      console.log('sigs: ', sigs);
     }
     getSigs();
   }, []);
