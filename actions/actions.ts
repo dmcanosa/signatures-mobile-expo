@@ -121,7 +121,7 @@ export async function getSignatures(): Promise<any[]>{
         //console.log('decrypted sig str: ', decrypted);
 
         const trimmed = decrypted.indexOf('data:image') >= 0 ? decrypted?.replace(/^data:image\/svg\+xml;base64,/, '') : decrypted;
-        //console.log('trimmed sig: ', trimmed);
+        console.log('trimmed sig: ', trimmed);
         
         const decoded = atob(trimmed as string);
         //console.log('decoded sig: ', decoded);
