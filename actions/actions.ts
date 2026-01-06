@@ -1,7 +1,8 @@
 //import { z } from 'zod';
 import { supabase } from '@/config/supabase';
-//import { Base64 as jsBase64 } from 'js-base64';
+import { Base64 as jsBase64 } from 'js-base64';
 //import * as Crypto from 'expo-crypto';
+import base64 from 'react-native-base64';
 import { AES, CBC, Pkcs7, PBKDF2, WordArray, Utf8, Base64 as cryptoEsBase64 } from 'crypto-es';
       
 const secretSigKey = process.env.EXPO_PUBLIC_SECRET_SIGNATURE_KEY as string;
@@ -56,7 +57,9 @@ export async function createSignature(formData: FormData) {
       .eq('user_id', uid)
     
     console.log(error);
-      
+    
+    
+
     (async function () {
       const encryptedSig = AES.encrypt(
         sig, 
@@ -119,13 +122,42 @@ export async function getSignatures(): Promise<any[]>{
         //console.log('decrypted sig: ', dec);
         const decrypted = dec.toString(Utf8);//Utf8);
         //console.log('decrypted sig str: ', decrypted);
-
-        const trimmed = decrypted.indexOf('data:image') >= 0 ? decrypted?.replace(/^data:image\/svg\+xml;base64,/, '') : decrypted;
-        console.log('trimmed sig: ', trimmed);
+        var trimmed = '';
         
-        const decoded = atob(trimmed as string);
-        //console.log('decoded sig: ', decoded);
-        sig.data = decoded;
+        if(decrypted.indexOf('data:image/svg') >= 0){
+          trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
+          console.log('trimmed sig: (svg) ', trimmed);
+          const decoded = atob(trimmed as string);
+          //console.log('decoded sig: ', decoded);
+          sig.data = decoded;
+        }else if(decrypted.indexOf('data:image/png') >= 0){   
+          trimmed = decrypted?.replace(/^data:image\/png;base64,/, '');
+          console.log('trimmed sig: (png) ', trimmed);
+          sig.data = trimmed;
+          //const decoded = base64.decode(trimmed as string);
+          /*const decoded = jsBase64.decode(trimmed as string);
+          console.log('decoded sig (Base64): ', decoded);  
+          sig.data = decoded;*/
+          //console.log('error, se usa trimmed: ',error);
+        }else{
+          trimmed = decrypted;
+          console.log('usando trimmed: ', trimmed);
+        }
+        
+        //data:image/png;base64
+        
+        /*try{
+          const decoded = atob(trimmed as string);
+          //console.log('decoded sig: ', decoded);
+          sig.data = decoded;
+        }catch(error){
+          const decoded = base64.decode(trimmed as string);
+          //const decoded = jsBase64.decode(trimmed as string);
+          console.log('decoded sig (Base64): ', decoded);  
+          sig.data = decoded;
+          console.log('error, se usa trimmed: ',error);  
+        //}*/
+        
         sig.key = sig.id;
         const date = new Date(sig.created);
         sig.created = date.toDateString();

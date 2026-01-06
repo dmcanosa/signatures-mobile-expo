@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, FlatList, View, Text, Dimensions, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { getSignatures } from '@/actions/actions';
@@ -23,10 +23,23 @@ const SignaturesScreen = () => {
   const Item = ({data, created, active}: ItemProps) => (
     <View style={styles.sigContainer}>
       <Text style={styles.sigTitle}>{'Active: '+active}</Text>
+      
+      {data.indexOf('<svg') >= 0 ? 
         <SvgXml xml={data} style={styles.svgElement} preserveAspectRatio="xMidYMid meet" />
+        :
+        <Image
+          source={{ uri: 'data:image/png;base64,'+data }}
+          style={{ width: 200, height: 200 }} // Set appropriate styles
+        />
+      }
+      
+
       <Text style={styles.sigTitle}>{'Created: '+created}</Text>
     </View>
   );
+
+  //<SvgXml xml={data} style={styles.svgElement} preserveAspectRatio="xMidYMid meet" />
+      
 
   return (
     <ThemedView style={styles.container}>
