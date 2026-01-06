@@ -29,7 +29,7 @@ const SignaturesScreen = () => {
         :
         <Image
           source={{ uri: 'data:image/png;base64,'+data }}
-          style={{ width: 200, height: 200 }} // Set appropriate styles
+          style={{ width: 320, height: 240 }} // Set appropriate styles
         />
       }
       
