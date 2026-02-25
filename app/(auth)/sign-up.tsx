@@ -90,9 +90,10 @@ export default function SignUp() {
       setError('Please check your email for verification link');
     }*/
     if(res.data.user?.id){
+      // Only store non-sensitive user data - passwords are handled by Supabase Auth
       const res2 = await supabase
       .from('users')
-      .insert({ id:res.data.user.id, name: dataAuth.name, email: dataAuth.email, password: dataAuth.password })
+      .insert({ id:res.data.user.id, name: dataAuth.name, email: dataAuth.email })
       if (res2.error) {
         setError(res2.error.message);
       } else {
