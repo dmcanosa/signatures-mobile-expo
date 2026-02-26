@@ -8,8 +8,11 @@ import {
   StyleSheet,
   GestureResponderEvent,
   Button,
-  Dimensions
+  Dimensions,
+  Alert,
 } from "react-native";
+import base64 from 'react-native-base64';
+import { logError, getErrorMessage } from '@/utils/error-handler';
 import Svg, { G, Path } from "react-native-svg";
 import { decamelize } from "humps";
 import { createSignature } from "@/actions/actions";
@@ -124,19 +127,24 @@ const CreateSignatureScreen = ({
   };
 
   const handleSubmit = async () =>{
-    const formData = new FormData();
-    const svgFromStrokes = convertStrokesToSvg(strokes, { width: sigWidth, height: sigHeight });
-    console.log('screen width: ', sigWidth);
-    console.log('screen height: ', sigHeight);
-    //console.log('svgfrom strokes: ', svgFromStrokes);
-    const base64Svg = btoa(svgFromStrokes);
-    //console.log('base64 svg: ', base64Svg);
-    
-    const sigString = `data:image/svg+xml;base64,${base64Svg}`;
-    formData.append('sigData', sigString);
-    const res = await createSignature(formData);
-    if(res.success === true){
-      setSigCreated(true);
+    try {
+      const formData = new FormData();
+      const svgFromStrokes = convertStrokesToSvg(strokes, { width: sigWidth, height: sigHeight });
+      const base64Svg = base64.encode(svgFromStrokes);
+
+      const sigString = `data:image/svg+xml;base64,${base64Svg}`;
+      formData.append('sigData', sigString);
+      const res = await createSignature(formData);
+      if(res?.success === true){
+        setSigCreated(true);
+        return;
+      }
+
+      const message = res?.message || 'Failed to create signature';
+      Alert.alert('Error', message);
+    } catch (error) {
+      logError(error, 'CreateSignatureScreen.handleSubmit');
+      Alert.alert('Error', getErrorMessage(error));
     }
   }
 

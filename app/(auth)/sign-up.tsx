@@ -2,10 +2,10 @@ import type { CustomTheme } from '@/constants/theme';
 import { Link } from 'expo-router';
 import { View } from 'react-native';
 import styled from '@emotion/native';
-import { supabase } from '@/config/supabase';
 import { useState } from 'react';
 import { useTheme } from '@emotion/react';
-import { AuthResponse } from '@supabase/supabase-js';
+import { signUpUser, type SignUpData } from '@/services/auth-service';
+import { getErrorMessage, logError } from '@/utils/error-handler';
 
 const StyledContainer = styled.View(({ theme }) => ({
   flex: 1,
@@ -67,38 +67,19 @@ export default function SignUp() {
     setLoading(true);
     setError(null);
 
-    const dataAuth = {
-      email,
-      name,
-      password
-    };
-
-    //const { error } = await supabase.auth.signUp(
-    const res:AuthResponse = await supabase.auth.signUp(
-      dataAuth
-      /*{
-      email,
-      name,
-      password,
-      }*/
-    );
-    console.log('signup res: ',res);
-
-    if (res.error) {
-      setError(res.error.message);
-    } /*else {
-      setError('Please check your email for verification link');
-    }*/
-    if(res.data.user?.id){
-      // Only store non-sensitive user data - passwords are handled by Supabase Auth
-      const res2 = await supabase
-      .from('users')
-      .insert({ id:res.data.user.id, name: dataAuth.name, email: dataAuth.email })
-      if (res2.error) {
-        setError(res2.error.message);
-      } else {
-        setLoading(false);
-      }  
+    try {
+      const signUpData: SignUpData = {
+        email,
+        password,
+        name,
+      };
+      await signUpUser(signUpData);
+      // Navigation handled by auth context
+    } catch (error) {
+      logError(error, 'signUp');
+      const message = getErrorMessage(error);
+      setError(message);
+      setLoading(false);
     }
   }
 

@@ -4,6 +4,7 @@ import { Base64 as jsBase64 } from 'js-base64';
 //import * as Crypto from 'expo-crypto';
 import base64 from 'react-native-base64';
 import { AES, CBC, Pkcs7, PBKDF2, WordArray, Utf8, Base64 as cryptoEsBase64 } from 'crypto-es';
+import { parseSupabaseError, logError } from '@/utils/error-handler';
       
 const secretSigKey = process.env.EXPO_PUBLIC_SECRET_SIGNATURE_KEY as string;
 const saltKey = process.env.EXPO_PUBLIC_SECRET_SIGNATURE_KEY_SALT as string;
@@ -31,144 +32,125 @@ const iv_wa = Utf8.parse(iv);
 };*/
 
 export async function createSignature(formData: FormData) {
-  //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
-  
-  /*const validatedFields = CreateSignature.safeParse({
-    data: formData.get('svgString'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Signature.',
-    };
-  }*/
-  
   try {
     const user = await supabase.auth.getUser();
-    console.log('user on create sig: ', user);
-    const sig = formData.get('sigData') as string;
-    const uid = user.data.user?.id;
-    console.log('user id: ',uid);
     
-    const { error } = await supabase
+    if (!user.data.user?.id) {
+      throw new Error('User not authenticated');
+    }
+
+    const sig = formData.get('sigData') as string;
+    if (!sig) {
+      throw new Error('Signature data is required');
+    }
+
+    const uid = user.data.user.id;
+    
+    // Deactivate previous signatures
+    const { error: deactivateError } = await supabase
       .from('signatures')
       .update({ active: false })
-      .eq('user_id', uid)
+      .eq('user_id', uid);
     
-    console.log(error);
+    if (deactivateError) {
+      throw deactivateError;
+    }
     
-    
+    // Encrypt and store new signature
+    const encryptedSig = AES.encrypt(
+      sig, 
+      key256, 
+      { iv: iv_wa, 
+        mode: CBC, 
+        padding: Pkcs7 
+      }
+    ).toString();
 
-    (async function () {
-      const encryptedSig = AES.encrypt(
-        sig, 
-        key256, 
-        { iv: iv_wa, 
-          mode: CBC, 
-          padding: Pkcs7 
-        }
-      ).toString();
-      //console.log('sig to encrypt: ', encryptedSig);
+    const { error: insertError } = await supabase
+      .from('signatures')
+      .insert({ data: encryptedSig, active: true, user_id: uid });
+    
+    if (insertError) {
+      throw insertError;
+    }
 
-      const { error } = await supabase
-        .from('signatures')
-        .insert({ data: encryptedSig, active: true, user_id: uid })
-      
-      console.log(error);  
-    })();
+    return {
+      success: true,
+      message: 'Signature created successfully',
+    };
   } catch (error) {
+    logError(error, 'createSignature');
+    const appError = parseSupabaseError(error);
     return {
       success: false,
-      message: 'Database Error: Failed to Create Signature.'+error,
+      message: appError.message,
     };
-  }  
-  return {
-    success: true,
-    message: '',
-  };
+  }
 }
 
-export async function getSignatures(): Promise<any[]>{
-  //const secretSigKey = process.env.SECRET_SIGNATURE_KEY as string;
+export async function getSignatures(): Promise<any[]> {
+  try {
+    const user = await supabase.auth.getUser();
+    
+    if (!user.data.user?.id) {
+      logError('User not authenticated', 'getSignatures');
+      return [];
+    }
 
-  
-  const user = await supabase.auth.getUser();
-  console.log('user on get sig: ', user);
-  const uid = user.data.user?.id;
-  console.log('user id: ',uid);
-  
-  const { data, error } = await supabase
+    const uid = user.data.user.id;
+    
+    const { data, error } = await supabase
       .from('signatures')
       .select()
-      .eq('user_id', uid)
-  
-  if(error){
-    console.log('error fetching sigs: ', error);
-    return [];
-  }else{
-    const decryptedSignatures:any[] = [];
-    try{  
-      data.map( (sig) => {
-        //console.log('UNdecoded sig: ', sig.data);
+      .eq('user_id', uid);
+    
+    if (error) {
+      logError(error, 'getSignatures');
+      return [];
+    }
 
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    const decryptedSignatures: any[] = [];
+    
+    data.forEach((sig) => {
+      try {
         const config = {
           iv: iv_wa, 
           mode: CBC,
           padding: Pkcs7
         };
 
-        const dec = AES.decrypt(sig.data, key256, config);//.toString(); //Utf8);
-        //console.log('decrypted sig: ', dec);
-        const decrypted = dec.toString(Utf8);//Utf8);
-        //console.log('decrypted sig str: ', decrypted);
-        var trimmed = '';
+        const dec = AES.decrypt(sig.data, key256, config);
+        const decrypted = dec.toString(Utf8);
         
-        if(decrypted.indexOf('data:image/svg') >= 0){
-          trimmed = decrypted?.replace(/^data:image\/svg\+xml;base64,/, '');
-          console.log('trimmed sig: (svg) ', trimmed);
-          const decoded = atob(trimmed as string);
-          //console.log('decoded sig: ', decoded);
-          sig.data = decoded;
-        }else if(decrypted.indexOf('data:image/png') >= 0){   
-          trimmed = decrypted?.replace(/^data:image\/png;base64,/, '');
-          console.log('trimmed sig: (png) ', trimmed);
-          sig.data = trimmed;
-          //const decoded = base64.decode(trimmed as string);
-          /*const decoded = jsBase64.decode(trimmed as string);
-          console.log('decoded sig (Base64): ', decoded);  
-          sig.data = decoded;*/
-          //console.log('error, se usa trimmed: ',error);
-        }else{
-          trimmed = decrypted;
-          console.log('usando trimmed: ', trimmed);
+        let processed = '';
+        
+        if (decrypted.includes('data:image/svg')) {
+          processed = decrypted.replace(/^data:image\/svg\+xml;base64,/, '');
+          sig.data = atob(processed);
+        } else if (decrypted.includes('data:image/png')) {
+          processed = decrypted.replace(/^data:image\/png;base64,/, '');
+          sig.data = processed;
+        } else {
+          sig.data = decrypted;
         }
-        
-        //data:image/png;base64
-        
-        /*try{
-          const decoded = atob(trimmed as string);
-          //console.log('decoded sig: ', decoded);
-          sig.data = decoded;
-        }catch(error){
-          const decoded = base64.decode(trimmed as string);
-          //const decoded = jsBase64.decode(trimmed as string);
-          console.log('decoded sig (Base64): ', decoded);  
-          sig.data = decoded;
-          console.log('error, se usa trimmed: ',error);  
-        //}*/
         
         sig.key = sig.id;
         const date = new Date(sig.created);
         sig.created = date.toDateString();
-        //console.log('sig before push: ', sig);
-        //if(decryptedSignatures)
-         decryptedSignatures?.push(sig);  
-        });
-    }catch(error){
-      console.log('error: ',error);  
-    }
+        decryptedSignatures.push(sig);
+      } catch (decryptError) {
+        logError(decryptError, 'getSignatures - decryption');
+      }
+    });
+
     return decryptedSignatures;
+  } catch (error) {
+    logError(error, 'getSignatures');
+    return [];
   }
 }
         

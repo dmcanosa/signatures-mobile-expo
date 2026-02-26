@@ -2,9 +2,10 @@ import type { CustomTheme } from '@/constants/theme';
 import { Link } from 'expo-router';
 import { View } from 'react-native';
 import styled from '@emotion/native';
-import { supabase } from '@/config/supabase';
 import { useState } from 'react';
 import { useTheme } from '@emotion/react';
+import { signInUser, type SignInData } from '@/services/auth-service';
+import { getErrorMessage, logError } from '@/utils/error-handler';
 
 const StyledContainer = styled.View(({ theme }: { theme: CustomTheme }) => ({
   flex: 1,
@@ -59,17 +60,19 @@ export default function SignIn() {
   const logoImage = require('../../assets/images/logo.png');
 
   async function signIn() {
-
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    console.log('error', error);
-    if (error) {
-      setError(error.message);
+    try {
+      const signInData: SignInData = { email, password };
+      await signInUser(signInData);
+      // Navigation handled by auth context
+    } catch (error) {
+      logError(error, 'signIn');
+      const message = getErrorMessage(error);
+      setError(message);
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
